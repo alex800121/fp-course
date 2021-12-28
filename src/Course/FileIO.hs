@@ -85,46 +85,47 @@ printFile ::
   FilePath
   -> Chars
   -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile x y= do
+  putStrLn $ (listh "============ ") ++ x
+  putStrLn y 
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
 printFiles ::
   List (FilePath, Chars)
   -> IO ()
-printFiles =
-  error "todo: Course.FileIO#printFiles"
+printFiles = mapM_ (\(x,y) -> printFile x y)
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
 getFile ::
   FilePath
   -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+getFile x = do
+  a <- readFile x
+  return (x, a)
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
 getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+getFiles = mapM getFile
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@ and @printFiles@.
 run ::
   FilePath
   -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+run x = (lines <$> readFile x) >>= getFiles >>= printFiles
 
 -- /Tip:/ use @getArgs@ and @run@
 main ::
   IO ()
-main =
-  error "todo: Course.FileIO#main"
+main = do
+  x <- getArgs
+  let (a :. as) = x
+  run a
 
 ----
 
@@ -132,3 +133,9 @@ main =
 -- ? `sequence . (<$>)`
 -- ? `void . sequence . (<$>)`
 -- Factor it out.
+
+mapM :: Monad m => (a -> m b) -> List a -> m (List b)
+mapM f = sequence . (<$>) f  
+
+mapM_ :: Monad m => (a -> m b) -> List a -> m ()
+mapM_ f = void . mapM f
