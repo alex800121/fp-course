@@ -34,7 +34,7 @@ instance (Applicative f, Applicative g) =>
     Compose f g (a -> b)
     -> Compose f g a
     -> Compose f g b
-  Compose f <*> Compose a = undefined
+  Compose f <*> Compose a = Compose $ lift2 (<*>) f a
 
 instance (Monad f, Monad g) =>
   Monad (Compose f g) where
