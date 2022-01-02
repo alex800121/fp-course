@@ -50,7 +50,7 @@ instance Extend List where
     (List a -> b)
     -> List a
     -> List b
-  f <<= Nil = Nil
+  _ <<= Nil = Nil
   f <<= l@(_ :. xs) = f l :. (f <<= xs)
 
 -- | Implement the @Extend@ instance for @Optional@.
@@ -65,7 +65,7 @@ instance Extend Optional where
     (Optional a -> b)
     -> Optional a
     -> Optional b
-  f <<= Empty = Empty
+  _ <<= Empty = Empty
   f <<= x = Full (f x)
 
 -- | Duplicate the functor using extension.

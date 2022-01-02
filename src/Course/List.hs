@@ -76,7 +76,7 @@ headOr ::
   -> List a
   -> a
 headOr x Nil = x
-headOr _ (y :. ys) = y
+headOr _ (y :. _) = y
 
 -- | The product of the elements of a list.
 --
@@ -119,7 +119,7 @@ length ::
   List a
   -> Int
 length Nil = 0
-length (x :. xs) = 1 + length xs
+length (_ :. xs) = 1 + length xs
 
 -- | Map the given function on each element of the list.
 --
@@ -283,9 +283,11 @@ lengthGT4 ::
   List a
   -> Bool
 lengthGT4 l = f 4 l
-  where f 0 _ = True
-        f _ Nil = False
-        f n (x :. xs) = f (n-1) xs
+  where
+    f :: Int -> List a -> Bool
+    f 0 _ = True
+    f _ Nil = False
+    f n (_ :. xs) = f (n-1) xs
 
 -- | Reverse a list.
 --

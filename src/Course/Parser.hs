@@ -428,9 +428,7 @@ firstNameParser ::
 firstNameParser = do
   c <- upper
   cs <- list lower
-  rest <- list character
-  if isEmpty rest then return (c :. cs)
-    else constantParser (parse (list1 lower) rest)
+  return $ c :. cs
 
 -- | Write a parser for Person.surname.
 --
@@ -455,17 +453,7 @@ surnameParser = do
   c <- upper
   cs <- thisMany 5 lower
   cs' <- list lower
-  rest <- list character
-  let dcs = toDiffList cs
-      dcs' = toDiffList cs'
-  if isEmpty rest then return (c :. fromDiffList (dcs . dcs'))
-    else constantParser (parse (list1 lower) rest)
-
-toDiffList :: List a -> (List a -> List a)
-toDiffList xs = (xs ++)
-
-fromDiffList :: (List a -> List a) -> List a
-fromDiffList f = f Nil
+  return $ c :. cs ++ cs'
 
 -- | Write a parser for Person.smoker.
 --
@@ -483,8 +471,7 @@ fromDiffList f = f Nil
 -- True
 smokerParser ::
   Parser Bool
-smokerParser =
-  error "todo: Course.Parser#smokerParser"
+smokerParser = ((const True) <$> is 'y') ||| ((const False) <$> is 'n')
 
 -- | Write part of a parser for Person#phoneBody.
 -- This parser will only produce a string of digits, dots or hyphens.
@@ -505,8 +492,7 @@ smokerParser =
 -- Result >a123-456< ""
 phoneBodyParser ::
   Parser Chars
-phoneBodyParser =
-  error "todo: Course.Parser#phoneBodyParser"
+phoneBodyParser = list (digit ||| is '-' ||| is '.')
 
 -- | Write a parser for Person.phone.
 --
@@ -527,8 +513,11 @@ phoneBodyParser =
 -- True
 phoneParser ::
   Parser Chars
-phoneParser =
-  error "todo: Course.Parser#phoneParser"
+phoneParser = do
+  a <- digit
+  b <- phoneBodyParser
+  c <- is '#'
+  return $ a :. b
 
 -- | Write a parser for Person.
 --
@@ -582,7 +571,12 @@ phoneParser =
 personParser ::
   Parser Person
 personParser =
-  error "todo: Course.Parser#personParser"
+  ageParser >>=~ \a -> 
+  firstNameParser >>=~ \b ->
+  surnameParser >>=~ \c ->
+  smokerParser >>=~ \d ->
+  phoneParser >>=~ \e ->
+  return $ Person a b c d e
 
 -- Make sure all the tests pass!
 

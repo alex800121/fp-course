@@ -58,7 +58,7 @@ instance Monad Optional where
     (a -> Optional b)
     -> Optional a
     -> Optional b
-  f =<< Empty = Empty
+  _ =<< Empty = Empty
   f =<< Full a = f a
 
 -- | Binds a function on the reader ((->) t).
